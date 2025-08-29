@@ -1,0 +1,58 @@
+<!--"meta" sets rulls/flags about the page-->
+<!DOCTYPE html> <!--declares HTML5-->
+<html lang="en"> <!--sets page language-->
+<head> <!--page settings go here | cover page-->
+    <title>Login</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--makes the layout fit phone screens nicely | viewport= window you look through to see the page-->
+    <!--contents: makes layout viewport as wide as device screen width in CSS pixels | is=1 : zoom in 100%-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <!--loads inter font-->
+    <style>
+        :root { --bg:#8ab78a; --card:#ffffff; --text:#0e1b16; --primary:#166534; --primary-ink:#14532d; }
+        /*bg: page background color, card: white card surface, text: dark green for text, primary: forest-green brand color, p-ink: darker shade for active states */
+        .brand{ text-align:center; margin-bottom:16px; color:var(--primary); font-family:'Montserrat', Inter, system-ui, sans-serif; text-transform:uppercase; }
+        .brand .top,.brand .bottom{ display:block; font-weight:800; font-size:clamp(48px,8vw,72px); line-height:.95; letter-spacing:.5px; }
+        .brand .bottom{ margin-top:6px; }
+
+
+        * { box-sizing:border-box; } /* '*': targets every element, b-sizing:b-box: changes how width/height are calculated */
+        body { margin:0; font-family:'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg); color:var(--text); }
+        /* mar:0 = removes browser default body marg, color = sets default text color*/
+        .wrap{ min-height:100vh; display:grid; place-items:center; padding:24px; } /*gives clean centered card on any screen*/
+        .card { width:100%; max-width:420px; background:var(--card); border:1px solid var(--primary); border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.08); }
+        /*white login card box*/
+        .card header { padding: 24px 2px 0; font-weight:600; color:var(--primary); font-size:20px; letter-spacing: .2px;}
+        /*title style for ProjectHub*/
+    </style>
+</head>
+<body>
+    <div class="wrap">
+      <div class="brand"><span class="top">Project</span><span class="bottom">Hub</span></div>
+      <div class="card">
+        <!--two nested boxes; full page wrapper and centered card-->
+        <main style="padding: 24px 24px 28px;">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}<ul style="list-style:none; padding:0; margin:0 0 12px 0;">
+              {% for category, msg in messages %}<li style="padding:8px 12px; border-radius:10px; border:1px solid var(--primary); margin-bottom:8px;">{{ msg }}</li>{% endfor %}
+            </ul>{% endif %}{% endwith %}  
+            <form action="/auth/login" method="post" novalidate> <!--action: sends form to URL, method: uses HTTP POST, noval: disables brower popups-->
+                <label for="username">Username</label>
+                <input id="username" name="username" type="text" autocomplete="username" required
+                   style="width:100%; padding:12px 14px; border:1px solid var(--primary); border-radius:12px; outline:none;">
+                <label for="password" style="display:block; margin-top:14px;">Password</label> <!--text label tied to password box
+                | for=password: connect label->input-->
+                <input id="password" name="password" type="password" autocomplete="current-password" required
+                        style="width:100%; padding:12px 14px; border:1px solid var(--primary); border-radius:12px; outline:none;">
+                        <!--password field | type=password: hides char | autocomplete: lets browser fill stored pass-->
+                <button type="submit" style="margin-top:16px; width:100%; padding:12px 14px; background:transparent; color:var(--primary); border:2px solid var(--primary); border-radius:12px; font-weight:600; cursor:pointer;">Sign in</button>         
+            </form>
+        </main>
+      </div> <!-- /.card -->
+    </div> <!-- /.wrap -->
+</body>
+</html>
+  
