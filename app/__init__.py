@@ -21,6 +21,9 @@ def create_app():
     app.register_blueprint(auth_bp) #attaches all routes from auth bllueprint
     app.config["TEMPLATES_AUTO_RELOAD"] = True #flask will auto-reload templates when editting .html files
     app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0 #
+    from app.routes.dashboard import bp as dash_bp  # import the dashboard blueprint object
+    app.register_blueprint(dash_bp)                 # attach its routes (under /dashboard/...)
+
     
     
     
