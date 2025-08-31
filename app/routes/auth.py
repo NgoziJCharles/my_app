@@ -34,7 +34,7 @@ def login_post(): #starts view ftn
         session["user_id"] = user.id #records user is logged ins
         session["username"] = user.username
         session["role"] = user.role
-        return redirect(url_for("home"))
+        return redirect(url_for("dash.dashboard_home"))
 
 @bp.get("/logout")
 def logout():
