@@ -18,3 +18,39 @@
         .card header { padding:24px 2px 0; font-weight:600; color:var(--primary);font-size:20px; letter-spacing:.2px; }
     </style>    
 </head>
+<body>
+    <div class="wrap">
+    <div class="brand"><span class="top">Project</span><span class="bottom">Hub</span></div>
+    <div class="card">
+        <header>Create Account</header>
+        <main style="padding: 24px 24px 28px;">
+        {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<ul style="list-style:none; padding:0; margin:0 0 12px 0;">{% for category, msg in messages %}<li style="padding:8px 12px; border-radius:10px; border:1px solid var(--primary); margin-bottom:8px;">{{ msg }}</li>{% endfor %}</ul>{% endif %}{% endwith %}
+        <form action="/auth/register" method="post"> <!--'<form>' defines where browser sends sign-up info: auth/register using POST-->
+            <label for="first_name">First name *</label> <!--'<label>' ties readable text to input for accessibility-->
+            <!--'*' visual cue for required-->
+            <input id="first_name" name="first_name" type="text" required style="width:100%;padding:12px 14px; border:1px solid var(--primary); border-radius:12px; outline:none;">
+            <!--'input' collects first name, marked as required, styled to match login-->
+            <label for="last_name" style="display:block; margin-top:14px;">Last name *</label>
+            <input id="last_name" name="last_name" type="text" required style="width:100%; padding:12px 14px; border:1px solid var(--primary); border-radius:12px; outline:none;">
+            <label for="phone" style="display:block; margin-top:14px;">Phone *</label>
+            <input id="phone" name="phone" type="tel" required style="width:100%; padding:12px 14px; border:1px solid var(--primary); border-radius:12px; outline:none;">
+            <label for="address" style="display:block; margin-top:14px;">Address *</label>
+            <input id="address" name="address" type="text" required style="width:100%; padding:12px 14px; border:1px solid var(--primary); border-radius:12px; outline:none;">
+            <label for="username" style="display:block; margin-top:14px;">Username *</label>
+            <input id="username" name="username" type="text" autocomplete="username" required style="width:100%; padding:12px 14px; border:1px solid var(--primary); border-radius:12px; outline:none;">
+            <!--autocomplete: helps browser suggest saved usernames-->
+            <label for="password" style="display:block; margin-top:14px;">Password *</label>
+            <input id="password" name="password" type="password" autocomplete="new-password" required style="width:100%; padding:12px 14px; border:1px solid var(--primary); border-radius:12px; outline:none;">
+            <!--autocomplete newpass: browser treats it as fresh pass (not reusing login one)-->
+            <button type="submit" style="margin-top:16px; width:100%; padding:12px 14px; background:transparent; color:var(--primary); border:2px solid var(--primary); border-radius:12px; font-weight:600; cursor:pointer;">Create account</button>
+            <div style="margin-top:10px; text-align:center;"><a href="{{ url_for('auth.login_get') }}" style="font-size:12px; color:var(--primary); text-decoration:underline;">Back to sign in</a></div>
+        </form>
+        </main>
+    </div>
+    </div>
+</body>
+</html>
+
+            
+    
+  
