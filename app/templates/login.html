@@ -48,7 +48,11 @@
                 <input id="password" name="password" type="password" autocomplete="current-password" required
                         style="width:100%; padding:12px 14px; border:1px solid var(--primary); border-radius:12px; outline:none;">
                         <!--password field | type=password: hides char | autocomplete: lets browser fill stored pass-->
-                <button type="submit" style="margin-top:16px; width:100%; padding:12px 14px; background:transparent; color:var(--primary); border:2px solid var(--primary); border-radius:12px; font-weight:600; cursor:pointer;">Sign in</button>         
+                <button type="submit" style="margin-top:16px; width:100%; padding:12px 14px; background:transparent; color:var(--primary); border:2px solid var(--primary); border-radius:12px; font-weight:600; cursor:pointer;">Sign in</button> 
+                <div style="margin-top:10px; text-align: center;">
+                  <a href="{{ url_for('auth.register_get') }}" style="font-size:12px; color:var(--primary); text-decoration:underline;">Create an account</a>
+                  <!--clickable link | href uses Jinja to call Flask's url_for-->
+                </div>
             </form>
         </main>
       </div> <!-- /.card -->

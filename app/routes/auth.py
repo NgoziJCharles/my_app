@@ -7,16 +7,26 @@ from flask import request, redirect, url_for, flash, session #import flash helpe
 #flash: stores one-time message (ex: wrong message)
 #session: remember logged-in user id
 from werkzeug.security import check_password_hash #password checker
+from werkzeug.security import generate_password_hash
 from app.db import get_session #openscloses DB transaction
-from app.models import User #ORM model for users table | lets us query User rows (find by username)
+from app.models import User, Customer #ORM model for users table | lets us query User rows (find by username)
+#importing customer creates matching profile row (n/p/a) linked to new User
 
-
+# '@' = decorator that tells Flash, "run next ftn when someone goes to this path"
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 #create a blueprint obj named "auth" | routes attached to bp will live under /auth/...
 @bp.get("/login") #basically tels flask to run next ftn when someone visits /auth/login
 #login form page
 def login_get(): return render_template("login.html")
-#view ftn | shows HTML f
+#view ftn | shows HTML 
+@bp.get("/register") #login page now has "create account" link
+def register_get():
+    return render_template("register.html") #load templates/register.html, send back to user
+@bp.post("/register") #tells Flask to run register_post() when browser submits sign-up form to auth/register using POST
+def register_post(): #start of create acc POST route
+    first = request.form["first_name"].strip()
+    last = request.form["last_name"].strip()
+    #safely reads first and last name, strips white space, raises error if field isn't present in submitted form
 @bp.post("/login") #runs next ftn when login form submitted
 def login_post(): #starts view ftn
     username = request.form.get("username", "").strip() #reads username field from form
