@@ -11,6 +11,11 @@ from werkzeug.security import generate_password_hash
 from app.db import get_session #openscloses DB transaction
 from app.models import User, Customer #ORM model for users table | lets us query User rows (find by username)
 #importing customer creates matching profile row (n/p/a) linked to new User
+from sqlalchemy import func #lets us do LOWER(...) in SWL for case-insensitive username checks
+import re
+PHONE_REQUIRED_LEN = 10 #requires 10 digits
+PHONE_RE = re.compile(r"\D+") #strips non digits from phone numbers
+
 
 # '@' = decorator that tells Flash, "run next ftn when someone goes to this path"
 bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -28,6 +33,10 @@ def register_post(): #start of create acc POST route
     last = request.form["last_name"].strip()
     #safely reads first and last name, strips white space, raises error if field isn't present in submitted form
     phone = request.form["phone"].strip()
+    phone = PHONE_RE.sub("",phone)
+    if len(phone) != PHONE_REQUIRED_LEN:
+        flash("Phone number must be a complete number.", "error")
+        return redirect(url_for("auth.register_get"))
     address = request.form["address"].strip()
     username = request.form["username"].strip()
     password = request.form["password"]
@@ -35,9 +44,15 @@ def register_post(): #start of create acc POST route
         flash("Please fill all required fields (*)", "error")
         return redirect(url_for("auth.register_get"))
     with get_session() as s:
-        if s.query(User).filter_by(username=username).first(): #runs query on User table WHERE username = username | .first() = get first match
-            flash("That username is taken. Choose another one please.", "error")
+        uname_ci = username.lower()
+        if s.query(User).filter(func.lower(User.username) == uname_ci).first():
+            flash("That username is taken.", "error")
             return redirect(url_for("auth.register_get"))
+        phone_q = s.query(Customer).filter(Customer.phone==phone).first() #returns first row if number matches phone row, else None
+        if phone_q:
+            flash("Phone number is already in use.", "error")
+            return redirect(url_for("auth.register_get"))
+
         user = User(username=username, password_hash=generate_password_hash(password), role="user")
         #User: builds new row for users table
         s.add(user) #registers w/ current DB session so it will be written to DB when the with block commits
