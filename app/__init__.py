@@ -8,6 +8,8 @@ load_dotenv() #execute load | reads .env
 
 def create_app():
     app = Flask(__name__) #constructs Flask application | sets up routing, templates, etc
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret")
     #reads secret_key from .env, falls back to dev-secret if missing
     @app.get("/health")
