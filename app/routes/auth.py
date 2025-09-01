@@ -1,5 +1,11 @@
-#login/logout endpoints
+# TEMP: admin wipe support
+# reads ADMIN_WIPE_TOKEN from env so only you can trigger the wipe
+import os
 
+#temp wipe needs meta base and engine 
+
+
+#login/logout endpoints
 from flask import Blueprint, render_template
 from flask import request, redirect, url_for, flash, session #import flash helpers | basic tools to process a login
 #request: reads from field (request.form["username"])
@@ -8,8 +14,9 @@ from flask import request, redirect, url_for, flash, session #import flash helpe
 #session: remember logged-in user id
 from werkzeug.security import check_password_hash #password checker
 from werkzeug.security import generate_password_hash
-from app.db import get_session #openscloses DB transaction
-from app.models import User, Customer #ORM model for users table | lets us query User rows (find by username)
+from app.db import get_session, engine #openscloses DB transaction
+from app.models import User, Customer, Base #ORM model for users table | lets us query User rows (find by username)
+#Base : brings in models' metadata
 #importing customer creates matching profile row (n/p/a) linked to new User
 from sqlalchemy import func #lets us do LOWER(...) in SWL for case-insensitive username checks
 import re
@@ -85,3 +92,13 @@ def login_post(): #starts view ftn
 def logout():
     session.clear()
     return redirect(url_for("auth.login_get"))
+
+#admin wipe for me
+@bp.post("/admin/wipe")
+def admin_wipe():
+    token = request.args.get("token") or request.headers.get("X-Admin-Token") or request.form.get("token")
+    if not token or token != os.getenv("ADMIN_WIPE_TOKEN"): return ("forbidden", 403)
+    Base.metadata.drop_all(bind=engine) #removes all tables
+    Base.metadata.create_all(bind=engine) #rebuilds them empty
+    session.clear() #logs out anyone
+    return ("wiped", 200) #returns HTTP 200 w/ text "wiped"
