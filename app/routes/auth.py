@@ -27,6 +27,22 @@ def register_post(): #start of create acc POST route
     first = request.form["first_name"].strip()
     last = request.form["last_name"].strip()
     #safely reads first and last name, strips white space, raises error if field isn't present in submitted form
+    phone = request.form["phone"].strip()
+    address = request.form["address"].strip()
+    username = request.form["username"].strip()
+    password = request.form["password"]
+    if not first or not last or not phone or not address or not username or not password:
+        flash("Please fill all required fields (*)", "error")
+        return redirect(url_for("auth.register_get"))
+    with get_session() as s:
+        if s.query(User).filter_by(username=username).first(): #runs query on User table WHERE username = username | .first() = get first match
+            flash("That username is taken. Choose another one please.", "error")
+            return redirect(url_for("auth.register_get"))
+        user = User(username=username, password_hash=generate_password_hash(password), role="user")
+        #User: builds new row for users table
+        s.add(user) #registers w/ current DB session so it will be written to DB when the with block commits
+        s.flush() #sends pending insert to DB without closing transaction, user.id is populated immediately
+    
 @bp.post("/login") #runs next ftn when login form submitted
 def login_post(): #starts view ftn
     username = request.form.get("username", "").strip() #reads username field from form
