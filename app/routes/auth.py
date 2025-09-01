@@ -42,6 +42,10 @@ def register_post(): #start of create acc POST route
         #User: builds new row for users table
         s.add(user) #registers w/ current DB session so it will be written to DB when the with block commits
         s.flush() #sends pending insert to DB without closing transaction, user.id is populated immediately
+        cust = Customer(name=f"{first} {last}", phone=phone, address=address, user_id=user.id)
+        s.add(cust)
+    flash("Account created! Please sign in.", "ok")
+    return redirect(url_for("auth.login_get"))
     
 @bp.post("/login") #runs next ftn when login form submitted
 def login_post(): #starts view ftn
