@@ -15,7 +15,7 @@
         .brand .bottom{ margin-top:6px; }
         .wrap{ min-height:100vh; display:grid; place-items:center; padding:24px; }
         .card { width:100%; max-width:420px; background:var(--card); border:1px solid var(--primary); border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.08); }
-        .card header { padding:24px 2px 0; font-weight:600; color:var(--primary);font-size:20px; letter-spacing:.2px; }
+        .card header { padding:24px 2px 0; text-align:center; font-weight:600; color:var(--primary);font-size:20px; letter-spacing:.2px; }
     </style>    
 </head>
 <body>
@@ -24,7 +24,10 @@
     <div class="card">
         <header>Create Account</header>
         <main style="padding: 24px 24px 28px;">
-        {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<ul style="list-style:none; padding:0; margin:0 0 12px 0;">{% for category, msg in messages %}<li style="padding:8px 12px; border-radius:10px; border:1px solid var(--primary); margin-bottom:8px;">{{ msg }}</li>{% endfor %}</ul>{% endif %}{% endwith %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}<div style="text-align:center; font-weight:700; color:#b91c1c; margin:0 0 12px 0;">
+            {% for category, msg in messages %}<div>{{ msg }}</div>{% endfor %}</div>{% endif %}
+            {% endwith %}            
         <form action="/auth/register" method="post"> <!--'<form>' defines where browser sends sign-up info: auth/register using POST-->
             <label for="first_name">First name *</label> <!--'<label>' ties readable text to input for accessibility-->
             <!--'*' visual cue for required-->
