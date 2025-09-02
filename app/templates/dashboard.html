@@ -170,6 +170,26 @@
         <section class="section">
           <div class="card">
             <h2>Projects</h2>
+            <form action="{{url_for('dash.create_project')}}" method="post" id="project-form" style="display:flex; gap:8px; align-items:flex-end; margin:12px 0;">
+              <div style="flex:1;">
+                <label for="proj-name">Name</label>
+                <input id="proj-name" name="name" type="text" required style="width:100%; padding:8px 10px; border:1px solid var(--primary); border-radius:10px;">
+              </div>
+              <div>
+                <label for="proj-stage">Stage</label>
+                <select id="proj-stage" name="stage" required style="padding:8px 10px; border:1px solid var(--primary); border-radius:10px;">
+                  <option value="" disabled selected>Choose stage…</option>
+                  <option value="1">Stage 1</option>
+                  <option value="2">Stage 2</option>
+                  <option value="3">Stage 3</option>
+                  <option value="4">Stage 4</option>
+                  <option value="5">Stage 5</option>
+                  <option value="6">Stage 6</option>
+                </select>
+                <button type="submit" style="margin-left:8px; padding:8px 12px; background:transparent; color:var(--primary); border:2px solid var(--primary); border-radius:8px; font-weight:600; cursor:pointer;">Add</button>
+              </div>
+            </form>
+            <hr style="border:none; border-top:1px solid var(--primary); opacity:.3; margin:10px 0;">
             <ul class="projects">
               {% if projects %}
                 {% for p in projects %}
