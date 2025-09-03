@@ -207,7 +207,7 @@
                     <button type="submit" class="link-btn danger">Delete</button>
                     </form>
                   </div>
-                  <form class="edit-form" action="{{ url_for('dash.edit_project', project_id=p.id) }}" method="post" style="display:none; margin-top:10px; gap:8px; align-items:flex-end;">
+                  <form class="edit-form" data-name="{{ p.name }}" data-stage="{{ p.stage }}" action="{{ url_for('dash.edit_project', project_id=p.id) }}" method="post" style="display:none; margin-top:10px; gap:8px; align-items:flex-end;">
                     <input name="name" type="text" value="{{ p.name }}" style="flex:1; padding:8px 10px; border:1px solid var(--primary); border-radius:10px;">
                     <select name="stage" style="padding:8px 10px; border:1px solid var(--primary); border-radius:10px;">
                       <option value="1" {{ 'selected' if p.stage==1 else '' }}>Stage 1</option>
@@ -272,7 +272,13 @@
   <script>
   document.addEventListener('click', (e) => {
     if (e.target.matches('[data-edit]')) { const li=e.target.closest('li'); li.querySelector('.link-row').style.display='none'; li.querySelector('.edit-form').style.display='flex'; }
-    if (e.target.matches('[data-cancel]')) { const li=e.target.closest('li'); li.querySelector('.edit-form').style.display='none'; li.querySelector('.link-row').style.display=''; }
+    if (e.target.matches('[data-cancel]')) {
+      const li   = e.target.closest('li');
+      const form = li.querySelector('.edit-form');
+      form.querySelector('[name="name"]').value  = form.dataset.name;
+      form.querySelector('[name="stage"]').value = form.dataset.stage;
+      form.style.display = 'none';
+      li.querySelector('.link-row').style.display = '';}
   });
   </script>  
 </body>
