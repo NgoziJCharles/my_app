@@ -52,4 +52,35 @@ def create_project():
 
     return redirect(url_for("dash.dashboard_home"))
 
-    
+@bp.post("/projects/<int:project_id>/delete")
+def delete_project(project_id):
+    if "user_id" not in session: return redirect(url_for("auth.login_get"))
+    with get_session() as s:
+        proj = s.query(Project).join(Customer).filter(Project.id==project_id, Customer.user_id==session["user_id"]).first()
+        if not proj:
+            flash("Project not found", "error"); return redirect(url_for("dash.dashboard_home"))
+        s.delete(proj)
+        flash("Project deleted", "success")
+    return redirect(url_for("dash.dashboard_home"))
+
+@bp.post("/projects/<int:project_id>/edit")
+def edit_project(project_id):
+    if "user_id" not in session: 
+        return redirect(url_for("auth.login_get"))
+    name = request.form.get("name","").strip()
+    stage_raw = request.form.get("stage","").strip()
+    if not name or not stage_raw: 
+        flash("Project name and stage are required","error"); 
+        return redirect(url_for("dash.dashboard_home"))
+    allowed = {"1","2","3","4","5","6"}
+    if stage_raw not in allowed: flash("Stage must be 1–6","error"); return redirect(url_for("dash.dashboard_home"))
+    stage = int(stage_raw)
+    with get_session() as s:
+        proj = s.query(Project).join(Customer).filter(Project.id==project_id, Customer.user_id==session["user_id"]).first()
+        if not proj: flash("Project not found","error"); return redirect(url_for("dash.dashboard_home"))
+        if name != proj.name or stage != proj.stage:
+            proj.name = name
+            proj.stage = stage
+            s.add(proj)
+            flash("Project updated", "success")
+    return redirect(url_for("dash.dashboard_home"))
