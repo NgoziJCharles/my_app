@@ -73,6 +73,10 @@ class ProjectStageHistory(Base): #defines history table | store every stage here
     #allows histories.project
     __table_args__ = (Index("ix_hist_project_changed", "project_id", "changed_at"),)
 
-
-
+class Notification(Base):
+    __tablename__ = "notifications"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    message = Column(String(255), nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
 
