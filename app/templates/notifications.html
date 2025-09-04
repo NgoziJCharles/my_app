@@ -116,7 +116,7 @@
       <div class="brand">PROJECT HUB</div>
       <nav class="nav">
         <a href="{{ url_for('dash.dashboard_home') }}">🏠 Dashboard</a>
-        <a href="{{ url_for('dash.notifications') }}">🔔 Notifications</a>
+        <a id="nav-notifications" href="{{ url_for('dash.notifications') }}">🔔 Notifications{% if unread_count and unread_count>0 %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
         <a href="{{ url_for('auth.logout') }}">↩︎ Logout</a>
       </nav>
     </aside>

@@ -55,6 +55,8 @@
     }
     .nav a:hover{ background:rgba(14,165,233,.10); color:var(--accent) }
 
+    .badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 6px;margin-left:8px;border-radius:999px;background:#ef4444;color:#fff;font-size:11px;font-weight:700;line-height:1}
+
     .main{
       display:grid; grid-template-rows: auto 1fr;
       min-height:100vh;
@@ -129,7 +131,7 @@
       <div class="brand">PROJECT HUB</div>
       <nav class="nav">
         <a href="{{ url_for('dash.dashboard_home') }}">🏠 Dashboard</a>
-        <a id="nav-notifications" href="{{ url_for('dash.notifications') }}">🔔 Notifications</a>
+        <a id="nav-notifications" href="{{ url_for('dash.notifications') }}">🔔 Notifications{% if unread_count and unread_count>0 %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>
         <a href="{{ url_for('auth.logout') }}">↩︎ Logout</a>
       </nav>
     </aside>

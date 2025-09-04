@@ -3,6 +3,8 @@ from flask import Blueprint, render_template, session, redirect, url_for, reques
 from app.db import get_session
 from app.models import Customer, Project, ProjectStageHistory, Notification
 from sqlalchemy import text
+from datetime import datetime
+
 
 
 
@@ -18,7 +20,14 @@ def dashboard_home():
         projects = [] #init empty list, gives default val if user has no customer profile
         if cust: #if customer record found
             projects = s.query(Project).filter_by(customer_id=cust.id).order_by(Project.updated_at.desc()).all()
-            #pulls back list of proj objs from DB so to show user's projs on dashboard, sorted by recent activity    
+            #pulls back list of proj objs from DB so to show user's projs on dashboard, sorted by recent activity
+        last_seen_raw = session.get("notes_last_seen")
+        try:
+            last_seen_dt = datetime.fromisoformat(last_seen_raw) if last_seen_raw else datetime(1970,1,1)
+        except Exception:
+            last_seen_dt = datetime(1970,1,1)
+        unread_count = s.query(Notification).filter(Notification.user_id==session["user_id"], Notification.created_at > last_seen_dt).count()
+    
 
     avg_stage = round(sum(p.stage for p in projects) / len(projects), 2) if projects else None
     if not projects:
@@ -31,7 +40,7 @@ def dashboard_home():
     return render_template(
     "dashboard.html",
     customer=cust, projects=projects, stage_labels=stage_labels,
-    status_text=status_text, status_class=status_class, avg_stage=avg_stage
+    status_text=status_text, status_class=status_class, avg_stage=avg_stage, unread_count=unread_count
 )
 
 @bp.get("/notifications")
@@ -39,8 +48,12 @@ def notifications():
     if "user_id" not in session:
         return redirect(url_for("auth.login_get"))
     with get_session() as s:
-        notes = s.query(Notification).filter_by(user_id=session["user_id"]).order_by(Notification.created_at.desc()).all()
-    return render_template("notifications.html", notifications=notes)
+        notes = (s.query(Notification)
+                .filter_by(user_id=session["user_id"])
+                .order_by(Notification.created_at.desc()).all())
+    session["notes_last_seen"] = datetime.utcnow().isoformat()
+    session.modified = True
+    return render_template("notifications.html", notifications=notes, unread_count=0)
 
 
 @bp.post("/projects")
