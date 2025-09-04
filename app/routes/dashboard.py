@@ -100,3 +100,10 @@ def edit_project(project_id):
             proj.stage = stage
             flash("Project updated", "success")
     return redirect(url_for("dash.dashboard_home"))
+
+@bp.get("/dev/migrate/create_notifications_table")
+def dev_create_notifications_table():
+    from app.db import engine
+    from app.models import Base
+    Base.metadata.create_all(bind=engine)
+    return "notifications table ok", 200
