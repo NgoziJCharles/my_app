@@ -34,3 +34,9 @@ def get_session(): #helper I'll call
     finally: #always rns whether error or not
         s.close() #closes DB
 
+# --- bootstrap: create tables if missing ---
+def init_db():
+    # Ensure all models are registered before create_all()
+    from app.models import Base
+    Base.metadata.create_all(bind=engine)
+

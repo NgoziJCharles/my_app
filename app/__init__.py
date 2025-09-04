@@ -3,6 +3,8 @@
 from flask import Flask, session, redirect, url_for
 import os
 from dotenv import load_dotenv
+from app.db import init_db
+
 
 load_dotenv() #execute load | reads .env
 
@@ -31,5 +33,7 @@ def create_app():
 
     app.config["TEMPLATES_AUTO_RELOAD"] = True #flask will auto-reload templates when editting .html files
     app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0 
+    with app.app_context():
+        init_db()
     
     return app
