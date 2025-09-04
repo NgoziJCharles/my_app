@@ -27,7 +27,10 @@ def dashboard_home():
 def notifications():
     if "user_id" not in session:
         return redirect(url_for("auth.login_get"))
-    return render_template("notifications.html")
+    with get_session() as s:
+        notes = s.query(Notification).filter_by(user_id=session["user_id"]).order_by(Notification.created_at.desc()).all()
+    return render_template("notifications.html", notifications=notes)
+
 
 @bp.post("/projects")
 def create_project():
