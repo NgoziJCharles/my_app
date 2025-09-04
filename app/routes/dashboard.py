@@ -23,6 +23,12 @@ def dashboard_home():
     stage_labels = {1:"Stage 1", 2:"Stage 2", 3:"Stage 3", 4:"Stage 4", 5:"Stage 5", 6:"Stage 6"} #dict mapping stage numbers
     return render_template("dashboard.html", customer=cust, projects=projects, stage_labels=stage_labels)
 
+@bp.get("/notifications")
+def notifications():
+    if "user_id" not in session:
+        return redirect(url_for("auth.login_get"))
+    return render_template("notifications.html")
+
 @bp.post("/projects")
 def create_project():
     if "user_id" not in session:
