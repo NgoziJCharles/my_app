@@ -108,6 +108,10 @@
     .link-btn.danger{border-color:rgba(239,68,68,.5);color:#ef4444}
     .link-row{display:flex;align-items:center;gap:8px}
 
+    .status-ok{color:#22c55e}
+    .status-bad{color:#ef4444}
+    .status-muted{color:var(--muted)}
+
     /* Responsive */
     @media (max-width: 980px){ .grid-3{ grid-template-columns: 1fr 1fr } }
     @media (max-width: 760px){
@@ -156,8 +160,11 @@
           </div>
           <div class="card">
             <h3>Status</h3>
-            <div class="big" style="color:var(--success)">On Track</div>
-          </div>
+            <div class="big {{ status_class }}">{{ status_text }}</div>
+            <div style="font-size:12px; color:var(--muted); margin-top:4px;">
+              Avg stage: {{ '%.2f'|format(avg_stage) if avg_stage is not none else '-' }}
+            </div>
+          </div>          
         </div>
 
         <!-- Profile -->

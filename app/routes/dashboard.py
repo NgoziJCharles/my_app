@@ -20,8 +20,19 @@ def dashboard_home():
             projects = s.query(Project).filter_by(customer_id=cust.id).order_by(Project.updated_at.desc()).all()
             #pulls back list of proj objs from DB so to show user's projs on dashboard, sorted by recent activity    
 
-    stage_labels = {1:"Stage 1", 2:"Stage 2", 3:"Stage 3", 4:"Stage 4", 5:"Stage 5", 6:"Stage 6"} #dict mapping stage numbers
-    return render_template("dashboard.html", customer=cust, projects=projects, stage_labels=stage_labels)
+    avg_stage = round(sum(p.stage for p in projects) / len(projects), 2) if projects else None
+    if not projects:
+        status_text, status_class = "-", "status-muted"
+    elif avg_stage >= 3:
+        status_text, status_class = "On Track", "status-ok"
+    else:
+        status_text, status_class = "Not on Track", "status-bad"
+    stage_labels = {1:"Stage 1", 2:"Stage 2", 3:"Stage 3", 4:"Stage 4", 5:"Stage 5", 6:"Stage 6"}
+    return render_template(
+    "dashboard.html",
+    customer=cust, projects=projects, stage_labels=stage_labels,
+    status_text=status_text, status_class=status_class, avg_stage=avg_stage
+)
 
 @bp.get("/notifications")
 def notifications():
@@ -91,16 +102,17 @@ def edit_project(project_id):
         name_changed  = (name  != proj.name)
         stage_changed = (stage != proj.stage)
         # notify only when moving 1 -> 2
-        if stage_changed and old_stage == 1 and stage == 2:
-            note_msg = f"{proj.name} has moved from Stage 1 to Stage 2."
-            note = Notification(user_id=session["user_id"], message=note_msg)
-            s.add(note)
-            # newest-first ordering is handled in the notifications route
         if stage_changed:
             s.add(ProjectStageHistory(project_id=proj.id, old_stage=old_stage, new_stage=stage))
         if name != proj.name or stage != proj.stage:
             proj.name = name
             proj.stage = stage
+            s.flush()
+            stages = [st for (st,) in s.query(Project.stage).join(Customer).filter(Customer.user_id==session["user_id"]).all()]
+            avg_stage = (sum(stages)/len(stages)) if stages else 0
+            status = "on track" if avg_stage >= 3 else "not on track"
+            if stage_changed and old_stage == 1 and stage == 2:
+                s.add(Notification(user_id=session["user_id"], message=f"{proj.name} has changed from Stage 1 to Stage 2 — you are now {status}"))
             flash("Project updated", "success")
     return redirect(url_for("dash.dashboard_home"))
 
