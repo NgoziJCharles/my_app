@@ -241,7 +241,7 @@
 
         <section class="section">
           <div class="card">
-            <h2>Activity</h2>
+            <h2>Projects by Stage</h2>
             <canvas id="trend" height="100"></canvas>
           </div>
         </section>
@@ -251,28 +251,41 @@
 
   <script>
     const ctx = document.getElementById('trend');
+    const labels = ['Stage 1','Stage 2','Stage 3','Stage 4','Stage 5','Stage 6'];
+    const dataCounts = JSON.parse('{{ stage_counts|tojson|safe }}');
+  
     const chart = new Chart(ctx, {
-      type: 'line',
+      type: 'bar',
       data: {
-        labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
+        labels,
         datasets: [{
-          label: 'Updates',
-          data: [3,4,2,6,8,7,9,11],               
-          borderColor: getComputedStyle(document.documentElement)
-                        .getPropertyValue('--accent').trim(),
-          backgroundColor: 'rgba(14,165,233,.18)',
-          fill: true, tension: .35, pointRadius: 0, borderWidth: 2
+          label: 'Projects',
+          data: dataCounts,
+          backgroundColor: 'rgba(14,165,233,.35)',
+          borderColor: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(),
+          borderWidth: 2
         }]
       },
       options: {
-        plugins:{ legend:{ display:false } },
-        scales:{
-          x:{ ticks:{ color:'#9CA3AF' }, grid:{ color:'rgba(255,255,255,.06)' } },
-          y:{ ticks:{ color:'#9CA3AF' }, grid:{ color:'rgba(255,255,255,.06)' } }
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `${ctx.formattedValue} project${ctx.parsed.y === 1 ? '' : 's'}`
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { color:'#9CA3AF' }, grid: { color:'rgba(255,255,255,.06)' } },
+          y: {
+            beginAtZero: true,
+            ticks: { precision:0, color:'#9CA3AF' },
+            grid: { color:'rgba(255,255,255,.06)' }
+          }
         }
       }
     });
-  </script>
+  </script>  
   <script>
     document.addEventListener('submit', (e) => {
       if (!e.target.matches('form.delete-form')) return;

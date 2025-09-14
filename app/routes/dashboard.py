@@ -1,4 +1,5 @@
 #shows name/phone/address/proj stage
+from collections import Counter
 from flask import Blueprint, render_template, session, redirect, url_for, request, flash
 from app.db import get_session
 from app.models import Customer, Project, ProjectStageHistory, Notification
@@ -28,6 +29,8 @@ def dashboard_home():
             last_seen_dt = datetime(1970,1,1)
         unread_count = s.query(Notification).filter(Notification.user_id==session["user_id"], Notification.created_at > last_seen_dt).count()
     
+    stages = [p.stage for p in projects] if projects else []
+    stage_counts = [Counter(stages).get(i, 0) for i in range(1, 7)]
 
     avg_stage = round(sum(p.stage for p in projects) / len(projects), 2) if projects else None
     if not projects:
@@ -40,7 +43,7 @@ def dashboard_home():
     return render_template(
     "dashboard.html",
     customer=cust, projects=projects, stage_labels=stage_labels,
-    status_text=status_text, status_class=status_class, avg_stage=avg_stage, unread_count=unread_count
+    status_text=status_text, status_class=status_class, avg_stage=avg_stage, unread_count=unread_count, stage_counts=stage_counts
 )
 
 @bp.get("/notifications")
